@@ -29,6 +29,7 @@
   }
 
   header {
+    position: relative;
     padding: 40px 24px 30px;
     border-bottom: 1px solid var(--border);
     text-align: center;
@@ -58,6 +59,60 @@
     color: var(--muted);
     margin-top: 8px;
     font-size: 0.95rem;
+  }
+
+  /* APP SWITCHER (sliding bar, top right) */
+
+  .app-toggle-wrapper {
+    position: absolute;
+    top: 40px;
+    right: 24px;
+  }
+
+  .app-toggle {
+    position: relative;
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .app-toggle-knob {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: var(--accent);
+    border-radius: 999px;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+
+  .app-toggle[data-active="anime"] .app-toggle-knob {
+    transform: translateX(100%);
+  }
+
+  .app-toggle-option {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    padding: 8px 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .app-toggle-option.active {
+    color: white;
   }
 
   /* LANGUAGE BUTTONS */
@@ -264,6 +319,13 @@
       padding-right: 16px;
     }
 
+    .app-toggle-wrapper {
+      position: static;
+      margin: 18px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+
   }
 </style>
 </head>
@@ -272,8 +334,40 @@
 
 <header>
 
+  <!-- APP SWITCHER -->
+
+  <div class="app-toggle-wrapper">
+
+    <div
+      class="app-toggle"
+      id="appToggle"
+      data-active="manga"
+    >
+
+      <div class="app-toggle-knob"></div>
+
+      <button
+        class="app-toggle-option active"
+        id="mangaAppBtn"
+        onclick="switchApp('manga')"
+      >
+        MangaPDF
+      </button>
+
+      <button
+        class="app-toggle-option"
+        id="animeAppBtn"
+        onclick="switchApp('anime')"
+      >
+        AnimeMP4
+      </button>
+
+    </div>
+
+  </div>
+
   <h1>
-    Manga<span>PDF</span>
+    <span id="titlePart1">Manga</span><span id="titlePart2">PDF</span>
     <small class="creator">Made by Dreoxis</small>
   </h1>
 
@@ -338,7 +432,7 @@
 <script>
 
   // =========================================================
-  // BIBLIOTHÈQUE ANGLAISE
+  // BIBLIOTHÈQUE ANGLAISE (MANGA) 
   // =========================================================
 
   const mangasEN = [
@@ -368,7 +462,7 @@
 
 
   // =========================================================
-  // BIBLIOTHÈQUE FRANÇAISE
+  // BIBLIOTHÈQUE FRANÇAISE (MANGA)
   // =========================================================
 
   const mangasFR = [
@@ -382,10 +476,57 @@
 
     {
       title: "Sbr Tome 1",
-      description: "Steel Ball Run suit Johnny Joestar, un ancien jockey paralysé, qui participe à une course à travers les États-Unis avec Gyro Zeppeli. Ensemble, ils affrontent de nombreux adversaires et découvrent que la course cache un mystérieux complot lié aux Saintes Reliques.",
+      description: "Steel Ball Run suit Johnny Joestar, un ancien jockey paralysé, qui participe à une course à travers les États-Unis.",
       cover: "covers/JojoSteelBallRunCover.jpg",
       pdf: "pdfs/Fr/Sbr-vol1.pdf"
-    }
+    },
+
+    {
+      title: "Sbr Tome 2",
+      description: "Steel Ball Run suit Johnny Joestar, un ancien jockey paralysé, qui participe à une course à travers les États-Unis.",
+      cover: "covers/sbr2.jpg",
+      pdf: "pdfs/Fr/Sbr-Tome2.pdf"
+    },
+
+  ];
+
+
+  // =========================================================
+  // BIBLIOTHÈQUE ANGLAISE (ANIME)
+  // Pour ajouter un épisode, copie ce modèle dans le tableau :
+  // {
+  //   title: "Nom de l'épisode",
+  //   description: "Résumé de l'épisode.",
+  //   cover: "covers/nom-cover.jpg",
+  //   video: "mp4/En/nom-episode.mp4"
+  // }
+  // =========================================================
+
+  const animeEN = [
+    
+    {
+     title: "Naruto Vol 1",
+     description: "Un jeune ninja rejeté par son village rêve de devenir Hokage.",
+     cover: "covers/narutocover.jpg",
+     pdf: "pdfs/Fr/Naruto-vol1-Fr.pdf"
+    },
+
+  ];
+
+
+  // =========================================================
+  // BIBLIOTHÈQUE FRANÇAISE (ANIME)
+  // Même modèle que ci-dessus, à remplir toi-même sur GitHub.
+  // =========================================================
+
+  const animeFR = [
+    
+    {
+     title: "Naruto Ep1",
+     description: "Un jeune ninja rejeté par son village rêve de devenir Hokage.",
+     cover: "covers/narutocover.jpg",
+     pdf: "Episode/NarutoVf1.mp4"
+    },
 
   ];
 
@@ -397,17 +538,26 @@
   const translations = {
 
     fr: {
-      subtitle:
+      subtitleManga:
         "Une petite bibliothèque de mangas à télécharger en PDF.",
+
+      subtitleAnime:
+        "Une petite bibliothèque d'épisodes à télécharger en MP4.",
 
       search:
         "Rechercher un titre...",
 
-      download:
+      downloadManga:
         "Télécharger le PDF",
 
-      empty:
+      downloadAnime:
+        "Télécharger l'épisode",
+
+      emptyManga:
         "Aucun manga trouvé.",
+
+      emptyAnime:
+        "Aucun épisode pour le moment. Ajoute le premier ci-dessus !",
 
       noCover:
         "Pas de couverture",
@@ -417,17 +567,26 @@
     },
 
     en: {
-      subtitle:
+      subtitleManga:
         "A small manga library available to download as PDF.",
+
+      subtitleAnime:
+        "A small episode library available to download as MP4.",
 
       search:
         "Search for a title...",
 
-      download:
+      downloadManga:
         "Download PDF",
 
-      empty:
+      downloadAnime:
+        "Download episode",
+
+      emptyManga:
         "No manga found.",
+
+      emptyAnime:
+        "No episodes yet. Add the first one above!",
 
       noCover:
         "No cover",
@@ -444,6 +603,7 @@
   // =========================================================
 
   let currentLanguage = "fr";
+  let currentApp = "manga";
 
   const grid =
     document.getElementById("grid");
@@ -463,18 +623,69 @@
   const enBtn =
     document.getElementById("enBtn");
 
+  const titlePart1 =
+    document.getElementById("titlePart1");
+
+  const titlePart2 =
+    document.getElementById("titlePart2");
+
+  const appToggle =
+    document.getElementById("appToggle");
+
+  const mangaAppBtn =
+    document.getElementById("mangaAppBtn");
+
+  const animeAppBtn =
+    document.getElementById("animeAppBtn");
+
 
   // =========================================================
-  // BIBLIOTHÈQUE ACTUELLE
+  // LISTE ACTUELLE (selon app + langue)
   // =========================================================
 
-  function getCurrentMangas() {
+  function getCurrentList() {
 
-    if (currentLanguage === "fr") {
-      return mangasFR;
+    if (currentApp === "manga") {
+
+      return currentLanguage === "fr" ? mangasFR : mangasEN;
+
     }
 
-    return mangasEN;
+    return currentLanguage === "fr" ? animeFR : animeEN;
+
+  }
+
+
+  // =========================================================
+  // CHANGER D'APP (MangaPDF <-> AnimeMP4)
+  // =========================================================
+
+  function switchApp(app) {
+
+    currentApp = app;
+
+    appToggle.dataset.active = app;
+
+    mangaAppBtn.classList.toggle("active", app === "manga");
+    animeAppBtn.classList.toggle("active", app === "anime");
+
+    if (app === "manga") {
+
+      titlePart1.textContent = "Manga";
+      titlePart2.textContent = "PDF";
+
+    } else {
+
+      titlePart1.textContent = "Anime";
+      titlePart2.textContent = "MP4";
+
+    }
+
+    applyTranslations();
+
+    searchInput.value = "";
+
+    render(getCurrentList());
 
   }
 
@@ -486,20 +697,6 @@
   function changeLanguage(language) {
 
     currentLanguage = language;
-
-    const t =
-      translations[language];
-
-
-    subtitle.textContent =
-      t.subtitle;
-
-    searchInput.placeholder =
-      t.search;
-
-    footer.textContent =
-      t.footer;
-
 
     if (language === "fr") {
 
@@ -517,16 +714,38 @@
 
     }
 
+    applyTranslations();
 
     searchInput.value = "";
 
-    render(getCurrentMangas());
+    render(getCurrentList());
 
   }
 
 
   // =========================================================
-  // AFFICHER LES MANGAS
+  // APPLIQUER LES TRADUCTIONS (selon app + langue)
+  // =========================================================
+
+  function applyTranslations() {
+
+    const t =
+      translations[currentLanguage];
+
+    subtitle.textContent =
+      currentApp === "manga" ? t.subtitleManga : t.subtitleAnime;
+
+    searchInput.placeholder =
+      t.search;
+
+    footer.textContent =
+      t.footer;
+
+  }
+
+
+  // =========================================================
+  // AFFICHER LA LISTE (manga ou anime)
   // =========================================================
 
   function render(list) {
@@ -536,12 +755,21 @@
     const t =
       translations[currentLanguage];
 
+    const emptyMessage =
+      currentApp === "manga" ? t.emptyManga : t.emptyAnime;
+
+    const downloadLabel =
+      currentApp === "manga" ? t.downloadManga : t.downloadAnime;
+
+    const fileField =
+      currentApp === "manga" ? "pdf" : "video";
+
 
     if (list.length === 0) {
 
       grid.innerHTML = `
         <div class="empty">
-          ${t.empty}
+          ${emptyMessage}
         </div>
       `;
 
@@ -593,10 +821,10 @@
 
           <a
             class="download"
-            href="${m.pdf}"
+            href="${m[fileField]}"
             download
           >
-            ${t.download}
+            ${downloadLabel}
           </a>
 
         </div>
@@ -626,7 +854,7 @@
 
 
       const filtered =
-        getCurrentMangas().filter(m =>
+        getCurrentList().filter(m =>
 
           m.title
             .toLowerCase()

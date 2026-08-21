@@ -1,3 +1,3 @@
 # MangaPDF
 
-Free Manga PDF Downloader
+Free Manga PDF To Download

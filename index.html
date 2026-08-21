@@ -1,256 +1,681 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bibliothèque Manga</title>
+<title>MangaPDF — Made by Dreoxis</title>
+
 <style>
-  :root{
-    --bg:#0a0a0a;
-    --card:#141414;
-    --border:#2a2a2a;
-    --text:#eeeeee;
-    --muted:#8a8a8a;
-    --accent:#e2231a; /* rouge encre, clin d'œil au tampon "hors-série" des mangas */
+  :root {
+    --bg: #0a0a0a;
+    --card: #141414;
+    --border: #2a2a2a;
+    --text: #eeeeee;
+    --muted: #8a8a8a;
+    --accent: #e2231a;
   }
 
-  *{box-sizing:border-box; margin:0; padding:0;}
-
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:"Helvetica Neue", Arial, sans-serif;
-    line-height:1.5;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
-  header{
-    padding:48px 24px 32px;
-    border-bottom:1px solid var(--border);
-    text-align:center;
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
   }
 
-  header h1{
-    font-size:2.2rem;
-    letter-spacing:2px;
-    text-transform:uppercase;
+  header {
+    padding: 40px 24px 30px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
   }
 
-  header h1 span{
-    color:var(--accent);
+  header h1 {
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
   }
 
-  header p{
-    color:var(--muted);
-    margin-top:8px;
-    font-size:0.95rem;
+  header h1 span {
+    color: var(--accent);
   }
 
-  .search-bar{
-    max-width:420px;
-    margin:24px auto 0;
-    display:flex;
+  .creator {
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    text-transform: none;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: normal;
   }
 
-  .search-bar input{
-    flex:1;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-right:none;
-    color:var(--text);
-    padding:10px 14px;
-    font-size:0.9rem;
+  header p {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 0.95rem;
   }
 
-  .search-bar input:focus{
-    outline:none;
-    border-color:var(--accent);
+  /* LANGUAGE BUTTONS */
+
+  .language-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 22px auto 0;
   }
 
-  main{
-    max-width:1100px;
-    margin:0 auto;
-    padding:40px 24px 80px;
+  .language-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 9px 18px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: 0.15s ease;
   }
 
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
-    gap:28px;
+  .language-btn:hover {
+    border-color: #555;
+    color: var(--text);
   }
 
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    transition:border-color .15s ease, transform .15s ease;
+  .language-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
   }
 
-  .card:hover{
-    border-color:#444;
-    transform:translateY(-3px);
+  /* SEARCH */
+
+  .search-bar {
+    max-width: 420px;
+    margin: 22px auto 0;
+    display: flex;
   }
 
-  .cover{
-    aspect-ratio:3/4;
-    width:100%;
-    background:#1c1c1c;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--muted);
-    font-size:0.8rem;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    overflow:hidden;
+  .search-bar input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    font-size: 0.9rem;
   }
 
-  .cover img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
+  .search-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
   }
 
-  .info{
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    flex:1;
+  /* MAIN */
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
   }
 
-  .info h2{
-    font-size:1.05rem;
-    letter-spacing:0.3px;
+  /* GRID */
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 28px;
   }
 
-  .info p{
-    color:var(--muted);
-    font-size:0.85rem;
-    flex:1;
+  /* CARD */
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition:
+      border-color 0.15s ease,
+      transform 0.15s ease;
   }
 
-  .download{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    margin-top:8px;
-    padding:10px 14px;
-    background:transparent;
-    border:1px solid var(--accent);
-    color:var(--accent);
-    text-decoration:none;
-    font-size:0.85rem;
-    font-weight:600;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    transition:background .15s ease, color .15s ease;
+  .card:hover {
+    border-color: #444;
+    transform: translateY(-3px);
   }
 
-  .download:hover{
-    background:var(--accent);
-    color:#0a0a0a;
+  /* COVER */
+
+  .cover {
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    background: #1c1c1c;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    overflow: hidden;
   }
 
-  footer{
-    text-align:center;
-    color:var(--muted);
-    font-size:0.8rem;
-    padding:24px;
-    border-top:1px solid var(--border);
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  .empty{
-    grid-column:1/-1;
-    text-align:center;
-    color:var(--muted);
-    padding:40px 0;
+  /* INFO */
+
+  .info {
+    padding: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    flex: 1;
+  }
+
+  .info h2 {
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+  }
+
+  .info p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    flex: 1;
+  }
+
+  /* DOWNLOAD */
+
+  .download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    margin-top: 8px;
+    padding: 10px 14px;
+
+    background: transparent;
+    border: 1px solid var(--accent);
+
+    color: var(--accent);
+    text-decoration: none;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .download:hover {
+    background: var(--accent);
+    color: #0a0a0a;
+  }
+
+  /* EMPTY */
+
+  .empty {
+    grid-column: 1 / -1;
+
+    text-align: center;
+    color: var(--muted);
+
+    padding: 40px 0;
+  }
+
+  /* FOOTER */
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+
+    font-size: 0.8rem;
+
+    padding: 24px;
+
+    border-top: 1px solid var(--border);
+  }
+
+  /* MOBILE */
+
+  @media (max-width: 650px) {
+
+    header h1 {
+      font-size: 1.7rem;
+    }
+
+    main {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
   }
 </style>
 </head>
+
 <body>
 
 <header>
-  <h1>Manga<span>Vault</span></h1>
-  <p>Une petite bibliothèque de mangas à télécharger en PDF.</p>
-  <div class="search-bar">
-    <input type="text" id="search" placeholder="Rechercher un titre...">
+
+  <h1>
+    Manga<span>PDF</span>
+    <small class="creator">Made by Dreoxis</small>
+  </h1>
+
+  <p id="subtitle">
+    Une petite bibliothèque de mangas à télécharger en PDF.
+  </p>
+
+  <!-- LANGUAGE SWITCHER -->
+
+  <div class="language-switcher">
+
+    <button
+      class="language-btn active"
+      id="frBtn"
+      onclick="changeLanguage('fr')"
+    >
+      🇫🇷 Français
+    </button>
+
+    <button
+      class="language-btn"
+      id="enBtn"
+      onclick="changeLanguage('en')"
+    >
+      🇬🇧 English
+    </button>
+
   </div>
+
+  <!-- SEARCH -->
+
+  <div class="search-bar">
+
+    <input
+      type="text"
+      id="search"
+      placeholder="Rechercher un titre..."
+    >
+
+  </div>
+
 </header>
 
+
 <main>
-  <div class="grid" id="grid"></div>
+
+  <div
+    class="grid"
+    id="grid"
+  ></div>
+
 </main>
 
-<footer>
+
+<footer id="footer">
+
   Fait avec ❤ — pense à respecter les droits d'auteur des œuvres que tu partages.
+
 </footer>
 
+
 <script>
-  // ---------------------------------------------------------
-  // Ajoute / modifie tes mangas ici. Un objet = une carte.
-  // - cover : URL d'une image de couverture (laisse vide "" pour un placeholder)
-  // - pdf   : chemin ou URL vers le fichier PDF à télécharger
-  // ---------------------------------------------------------
-  const mangas = [
+
+  // =========================================================
+  // BIBLIOTHÈQUE ANGLAISE
+  // =========================================================
+  //
+  // Tes mangas actuels sont conservés ici.
+  //
+  // Pour ajouter un manga :
+  //
+  // {
+  //   title: "Nom du manga",
+  //   description: "Description du manga.",
+  //   cover: "covers/nom-cover.jpg",
+  //   pdf: "pdfs/nom.pdf"
+  // },
+  //
+  // =========================================================
+
+  const mangasEN = [
+
     {
       title: "Goodbye, Eri",
       description: "Random BS",
       cover: "covers/goodbye-eri-cover.jpg",
-      pdf: "pdfs/goodbye-eri.pdf"
+      pdf: "pdfs/Eng/goodbye-eri.pdf"
     },
+
     {
       title: "Naruto Volume 1",
-      description: "Un jeune ninja rejeté par son village rêve de devenir Hokage.",
+      description: "A young ninja rejected by his village dreams of becoming Hokage.",
       cover: "covers/narutocover.jpg",
-      pdf: "pdfs/Naruto-Volume-01.pdf"
+      pdf: "pdfs/Eng/Naruto-Volume-01.pdf"
     },
+
     {
       title: "Berserk Volume 1",
-      description: "Guts, le guerrier noir, affronte son destin dans un monde sombre et brutal.",
+      description: "Guts, the Black Swordsman, faces his destiny in a dark and brutal world.",
       cover: "covers/Berserkcover.jpg",
-      pdf: "pdfs/Berserkvolume-1.pdf"
+      pdf: "pdfs/Eng/Berserkvolume-1.pdf"
     }
+
   ];
 
-  const grid = document.getElementById("grid");
-  const searchInput = document.getElementById("search");
 
-  function render(list){
-    grid.innerHTML = "";
-    if(list.length === 0){
-      grid.innerHTML = '<div class="empty">Aucun manga trouvé.</div>';
-      return;
+  // =========================================================
+  // BIBLIOTHÈQUE FRANÇAISE
+  // =========================================================
+  //
+  // Ajoute tes mangas français ici.
+  //
+  // Exemple :
+  //
+  // {
+  //   title: "Naruto Volume 1",
+  //   description: "Un jeune ninja rejeté par son village rêve de devenir Hokage.",
+  //   cover: "covers/narutocover.jpg",
+  //   pdf: "pdfs/Naruto-Volume-01.pdf"
+  // },
+  //
+  // =========================================================
+
+  const mangasFR = [
+
+    {
+     title: "Naruto Tome 1",
+     description: "Un jeune ninja rejeté par son village rêve de devenir Hokage.",
+     cover: "covers/narutocover.jpg",
+     pdf: "pdfs/Fr/Naruto-vol1-Fr.pdf"
+    },
+
+
+  ];
+
+
+  // =========================================================
+  // TRADUCTIONS
+  // =========================================================
+
+  const translations = {
+
+    fr: {
+      subtitle:
+        "Une petite bibliothèque de mangas à télécharger en PDF.",
+
+      search:
+        "Rechercher un titre...",
+
+      download:
+        "Télécharger le PDF",
+
+      empty:
+        "Aucun manga trouvé.",
+
+      noCover:
+        "Pas de couverture",
+
+      footer:
+        "Fait avec ❤ — pense à respecter les droits d'auteur des œuvres que tu partages."
+    },
+
+    en: {
+      subtitle:
+        "A small manga library available to download as PDF.",
+
+      search:
+        "Search for a title...",
+
+      download:
+        "Download PDF",
+
+      empty:
+        "No manga found.",
+
+      noCover:
+        "No cover",
+
+      footer:
+        "Made with ❤ — please respect the copyrights of the works you share."
     }
-    list.forEach(m => {
-      const card = document.createElement("div");
-      card.className = "card";
 
-      const coverHtml = m.cover
-        ? `<img src="${m.cover}" alt="Couverture de ${m.title}">`
-        : "Pas de couverture";
+  };
 
-      card.innerHTML = `
-        <div class="cover">${coverHtml}</div>
-        <div class="info">
-          <h2>${m.title}</h2>
-          <p>${m.description}</p>
-          <a class="download" href="${m.pdf}" download>Télécharger le PDF</a>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
+
+  // =========================================================
+  // VARIABLES
+  // =========================================================
+
+  let currentLanguage = "fr";
+
+  const grid =
+    document.getElementById("grid");
+
+  const searchInput =
+    document.getElementById("search");
+
+  const subtitle =
+    document.getElementById("subtitle");
+
+  const footer =
+    document.getElementById("footer");
+
+  const frBtn =
+    document.getElementById("frBtn");
+
+  const enBtn =
+    document.getElementById("enBtn");
+
+
+  // =========================================================
+  // BIBLIOTHÈQUE ACTUELLE
+  // =========================================================
+
+  function getCurrentMangas() {
+
+    if (currentLanguage === "fr") {
+      return mangasFR;
+    }
+
+    return mangasEN;
+
   }
 
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase();
-    render(mangas.filter(m => m.title.toLowerCase().includes(q)));
-  });
 
-  render(mangas);
+  // =========================================================
+  // CHANGER DE LANGUE
+  // =========================================================
+
+  function changeLanguage(language) {
+
+    currentLanguage = language;
+
+    const t =
+      translations[language];
+
+
+    subtitle.textContent =
+      t.subtitle;
+
+    searchInput.placeholder =
+      t.search;
+
+    footer.textContent =
+      t.footer;
+
+
+    if (language === "fr") {
+
+      frBtn.classList.add("active");
+      enBtn.classList.remove("active");
+
+      document.documentElement.lang = "fr";
+
+    } else {
+
+      enBtn.classList.add("active");
+      frBtn.classList.remove("active");
+
+      document.documentElement.lang = "en";
+
+    }
+
+
+    searchInput.value = "";
+
+    render(getCurrentMangas());
+
+  }
+
+
+  // =========================================================
+  // AFFICHER LES MANGAS
+  // =========================================================
+
+  function render(list) {
+
+    grid.innerHTML = "";
+
+    const t =
+      translations[currentLanguage];
+
+
+    if (list.length === 0) {
+
+      grid.innerHTML = `
+        <div class="empty">
+          ${t.empty}
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    list.forEach(m => {
+
+      const card =
+        document.createElement("div");
+
+      card.className = "card";
+
+
+      const coverHtml = m.cover
+
+        ? `
+          <img
+            src="${m.cover}"
+            alt="Cover de ${m.title}"
+          >
+        `
+
+        : t.noCover;
+
+
+      card.innerHTML = `
+
+        <div class="cover">
+
+          ${coverHtml}
+
+        </div>
+
+
+        <div class="info">
+
+          <h2>
+            ${m.title}
+          </h2>
+
+
+          <p>
+            ${m.description}
+          </p>
+
+
+          <a
+            class="download"
+            href="${m.pdf}"
+            download
+          >
+            ${t.download}
+          </a>
+
+        </div>
+
+      `;
+
+
+      grid.appendChild(card);
+
+    });
+
+  }
+
+
+  // =========================================================
+  // RECHERCHE
+  // =========================================================
+
+  searchInput.addEventListener(
+    "input",
+    () => {
+
+      const q =
+        searchInput.value
+          .toLowerCase()
+          .trim();
+
+
+      const filtered =
+        getCurrentMangas().filter(m =>
+
+          m.title
+            .toLowerCase()
+            .includes(q)
+
+          ||
+
+          m.description
+            .toLowerCase()
+            .includes(q)
+
+        );
+
+
+      render(filtered);
+
+    }
+  );
+
+
+  // =========================================================
+  // INITIALISATION
+  // =========================================================
+
+  render(mangasFR);
+
 </script>
 
 </body>
 </html>
+```
